@@ -1,0 +1,20 @@
+{
+  "type": "datasource",
+  "name": "Atlas",
+  "id": "atlas",
+  "hiddenQueries": false,
+  "metrics": true,
+  "alerting": false,
+  "annotations": false,
+  "info": {
+    "description": "Data source for Netflix Atlas monitoring system",
+    "author": {
+      "name": "Jon Schneider",
+      "url": "https://github.com/jkschneider/grafana-datasource-atlas"
+    },
+    "logos": {
+      "small": "img/atlas_logo.png",
+      "large": "img/atlas_logo.png"
+    }
+  }
+}
