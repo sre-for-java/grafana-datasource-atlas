@@ -36,6 +36,16 @@ export class AtlasDatasource extends DataSourceApi<AtlasQuery, AtlasOptions> {
   }
 
   query(options: DataQueryRequest<AtlasQuery>): Promise<DataQueryResponse> {
+    options.targets = options.targets.sort((t1, t2) => {
+      if (t1.expr.includes(`#${t2.refId}`)) {
+        return 1;
+      } else if (t2.expr.includes(`#${t1.refId}`)) {
+        return -1;
+      } else {
+        return t1.refId.localeCompare(t2.refId);
+      }
+    });
+
     options.targets = options.targets
       .filter(target => target.expr && target.expr.length > 0)
       .filter(target => !target.hide);
@@ -65,19 +75,41 @@ export class AtlasDatasource extends DataSourceApi<AtlasQuery, AtlasOptions> {
       }
     }).join(',') + new Array(Math.max(0, adhocFilters.length - 1)).fill(',:and').join('') + ',:cq';
 
-    const q = options.targets
-      .map(t => t.expr.split('\n')
-        .filter(line => !line.trim().startsWith('#'))
+    for (const t of options.targets) {
+      t.expr = t.expr.split('\n')
+        .filter(line => !line.trim().startsWith('//'))
         .map(line => line.replace(/'([^\s]*)\s+([^']*)'/, '$1+$2'))
         .map(line => line.replace(/"([^\s]*)\s+([^"]*)"/, '$1+$2'))
         .map(line => line.replace(/'([^']*)'/, '$1'))
         .map(line => line.replace(/"([^"]*)"/, '$1'))
         .map(line => line.replace(/\s/, ''))
         .map(line => this.templateSrv.replace(line, options.scopedVars, this.interpolateQueryExpr))
-        .join('')
-      )
-      .filter(expr => expr.length > 0)
-      .map(expr => adhocFilters.length > 0 ? `${expr},${adhocFilterExpr}` : expr)
+        .map(line => {
+          let replaced = line;
+          (line.match(/#([a-zA-Z])/g) || [])
+            .map((match: string) => match.substring(1))
+            .forEach((refId: string) => {
+              const ref = options.targets.find(target => target.refId === refId);
+              if (ref) {
+                replaced = replaced.replace(`#${refId}`, ref.expr);
+              }
+            });
+          return replaced;
+        })
+        .join('');
+    }
+
+    // append legend text to queries
+    options.targets = options.targets.map(t => {
+      if (t.legend) {
+        t.expr += `,${t.legend},:legend`;
+      }
+      return t;
+    });
+
+    const q = options.targets
+      .filter(t => t.expr.length > 0)
+      .map(t => adhocFilters.length > 0 ? `${t.expr},${adhocFilterExpr}` : t.expr)
       .join(',');
 
     return this.doRequest('/api/v1/graph', `q=${q}`, 'format=std.json',
@@ -89,7 +121,9 @@ export class AtlasDatasource extends DataSourceApi<AtlasQuery, AtlasOptions> {
         return {
           data: response.legend.map((legend, i) => ({
             target: legend,
-            datapoints: response.values.map((points, j) => [points[i], start + step * j]),
+            datapoints: response.values
+              .map((points, j) => [points[i], start + step * j])
+              .filter(point => point[0] !== "NaN"),
           }))
         };
       })
@@ -112,7 +146,7 @@ export class AtlasDatasource extends DataSourceApi<AtlasQuery, AtlasOptions> {
       this.doRequest(`/api/v1/tags`, `q=${query}`) :
       this.doRequest(`/api/v1/tags/${query}`);
 
-    tagsQueryResponse = tagsQueryResponse.then((tags: string[]) => tags.map(tag => ({ text : tag })));
+    tagsQueryResponse = tagsQueryResponse.then((tags: string[]) => tags.map(tag => ({ text: tag })));
 
     const { regex } = options.variable;
     if (regex && regex.length > 0) {

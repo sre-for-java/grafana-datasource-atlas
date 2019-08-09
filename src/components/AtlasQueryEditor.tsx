@@ -22,10 +22,11 @@ const plugins = [
 
 export const AtlasQueryEditor = (props: Props) => {
   const { query, onRunQuery, onChange } = props;
-  const [ expr, setExpr ] = useState(makeValue(query.expr || ''));
+  const [legend, setLegend] = useState(query.legend || '');
+  const [expr, setExpr] = useState(makeValue(query.expr || ''));
 
   const executeOnChangeAndRunQueries = () => {
-    onChange({ ...query, expr: Plain.serialize(expr) });
+    onChange({ ...query, expr: Plain.serialize(expr), legend: legend });
     onRunQuery();
   };
 
@@ -45,27 +46,42 @@ export const AtlasQueryEditor = (props: Props) => {
   };
 
   return (
-    <div className="gf-form-inline gf-form-inline--nowrap">
-      <div className="gf-form flex-shrink-0">
-        <FormLabel width={7}>Query</FormLabel>
-      </div>
-      <div className="gf-form gf-form--grow flex-shrink-1">
-        <div className="slate-query-field__wrapper">
-          <div className="slate-query-field">
-            <Editor
-              spellCheck={false}
-              autoCorrect={false}
-              plugins={plugins}
-              readOnly={false}
-              value={expr}
-              placeholder="Enter an Atlas query"
-              onChange={(e: OnChangeParam) => setExpr(e.value)}
-              onBlur={executeOnChangeAndRunQueries}
-              onKeyDown={onKeyDown}
-            />
+    <>
+      <div className="gf-form-inline gf-form-inline--nowrap">
+        <div className="gf-form flex-shrink-0">
+          <FormLabel width={7}>Query</FormLabel>
+        </div>
+        <div className="gf-form gf-form--grow flex-shrink-1">
+          <div className="slate-query-field__wrapper">
+            <div className="slate-query-field">
+              <Editor
+                spellCheck={false}
+                autoCorrect={false}
+                plugins={plugins}
+                readOnly={false}
+                value={expr}
+                placeholder="Enter an Atlas query"
+                onChange={(e: OnChangeParam) => setExpr(e.value)}
+                onBlur={executeOnChangeAndRunQueries}
+                onKeyDown={onKeyDown}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <div className="gf-form-inline gf-form-inline--nowrap">
+        <div className="gf-form flex-shrink-0">
+          <FormLabel width={7}>Legend</FormLabel>
+        </div>
+        <div className="gf-form gf-form--grow flex-shrink-1">
+          <input type="text"
+            className="gf-form-input"
+            placeholder="text $tagKey"
+            value={legend}
+            onChange={e => setLegend(e.target.value)}
+            onBlur={executeOnChangeAndRunQueries} />
+        </div>
+      </div>
+    </>
   );
 };

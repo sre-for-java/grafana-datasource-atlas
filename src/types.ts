@@ -2,6 +2,7 @@ import { DataQuery, DataSourceJsonData } from '@grafana/ui';
 
 export interface AtlasQuery extends DataQuery {
   expr: string;
+  legend: string;
 }
 
 export interface AtlasOptions extends DataSourceJsonData {

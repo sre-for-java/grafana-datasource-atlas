@@ -1,6 +1,6 @@
 export default {
   'comment': {
-    pattern: /(^|[^\\$])#.*/,
+    pattern: /(^|[^\\$])\/\/.*/,
     lookbehind: true,
     inside: {
       'italic': /\b(?:TODO|FIXME)\b/
@@ -23,7 +23,7 @@ export default {
 
     // stateful
     // tslint:disable-next-line max-line-length
-    /(?::delay|:derivative|:des|:des-epic-signal|:des-fast|:des-simple|:des-slow|:des-slower|:integral|:rolling-count|:rolling-max|:rolling-mean|:rolling-min|:sdes|:sdes-fast|:sdes-simple|:sdes-slow|:sdes-slower|:trend)/,
+    /(?::delay|:derivative|:des-epic-signal|:des-fast|:des-simple|:des-slower|:des-slow|:des|:integral|:rolling-count|:rolling-max|:rolling-mean|:rolling-min|:sdes|:sdes-fast|:sdes-simple|:sdes-slow|:sdes-slower|:trend)/,
 
     // std
     // tslint:disable-next-line max-line-length

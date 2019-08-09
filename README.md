@@ -2,7 +2,7 @@
 
 A Grafana 6.2+ datasource plugin for [Netflix Atlas](https://github.com/netflix/atlas/wiki).
 
-![Plugin example](doc/img/sps.png?s=200)
+![Plugin example](doc/img/sps.png)
 
 ## Develop
 
