@@ -4,6 +4,12 @@ A Grafana 6.2+ datasource plugin for [Netflix Atlas](https://github.com/netflix/
 
 ![Plugin example](doc/img/sps.png)
 
+## Query references
+
+Queries can refer to and embed other queries by # followed by letter name, as shown here:
+
+![Query references](doc/img/query_references.png)
+
 ## Develop
 
 1. Clone Grafana and create a symlink to this project's root wherever you have cloned Grafana's repository in the `${GRAFANA_REPO}/data/plugins` directory.
