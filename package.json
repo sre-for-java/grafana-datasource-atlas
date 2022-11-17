@@ -26,7 +26,7 @@
     "babel-loader": "8.0.5",
     "copy-webpack-plugin": "^5.0.4",
     "es6-promise": "^4.2.8",
-    "loader-utils": "^1.1.0",
+    "loader-utils": "^1.4.2",
     "prismjs": "^1.17.1",
     "slate": "^0.47.4",
     "slate-plain-serializer": "^0.7.6",
